@@ -1,0 +1,615 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "REST - User",
+      "version": "golang - gorilla/mux - v1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8080"
+      }
+    ],
+    "tags": [
+      {
+        "name": "User"
+      }
+    ],
+    "paths": {
+      "/users/{id}": {
+        "get": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Get User",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer"
+              },
+              "example": "203"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 11:39:18 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 169
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": true,
+                    "service": "User Service",
+                    "message": "Successfully",
+                    "data": {
+                      "id": 201,
+                      "name": "irzam",
+                      "email": "irzam@gmail.com",
+                      "password": "1234567"
+                    },
+                    "created_at": 1679485158
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Unprocessable Entity",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 13:26:11 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 110
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": false,
+                    "service": "User Service",
+                    "message": "User not found",
+                    "data": {
+                      "id": 999
+                    },
+                    "created_at": 1679491571
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Update",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer"
+              },
+              "example": "201"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "name": "dian",
+                    "email": "dian@gmail.com",
+                    "password": "dian"
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 13:27:40 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 164
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": true,
+                    "service": "User Service",
+                    "message": "Successfully",
+                    "data": {
+                      "id": 201,
+                      "name": "dian",
+                      "email": "dian@gmail.com",
+                      "password": "dian"
+                    },
+                    "created_at": 1679491660
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Unprocessable Entity",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 13:28:06 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 110
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": false,
+                    "service": "User Service",
+                    "message": "User not found",
+                    "data": {
+                      "id": 999
+                    },
+                    "created_at": 1679491686
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Delete",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer"
+              },
+              "example": "201"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 11:40:35 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 132
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": true,
+                    "service": "User Service",
+                    "message": "Successfully",
+                    "data": {
+                      "message": "Data has been deleted"
+                    },
+                    "created_at": 1679485235
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/users": {
+        "get": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Get All Users",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 13:28:35 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 460
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": true,
+                    "service": "User Service",
+                    "message": "Successfully",
+                    "data": [
+                      {
+                        "id": 201,
+                        "name": "dian",
+                        "email": "dian@gmail.com",
+                        "password": "dian"
+                      },
+                      {
+                        "id": 203,
+                        "name": "irzam",
+                        "email": "irzam@gmail.com",
+                        "password": "1234567"
+                      },
+                      {
+                        "id": 204,
+                        "name": "irzam",
+                        "email": "irzam123@gmail.com",
+                        "password": "1234567"
+                      },
+                      {
+                        "id": 208,
+                        "name": "irzam",
+                        "email": "irzam9@gmail.com",
+                        "password": "1234567"
+                      }
+                    ],
+                    "pagination": {
+                      "per_page": 5,
+                      "current_page": 1,
+                      "total": 4,
+                      "total_pages": 1
+                    },
+                    "created_at": 1679491715
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Create",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "name": "irzam",
+                    "email": "irzam12@gmail.com",
+                    "password": "12345667"
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 13:26:58 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 170
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": true,
+                    "service": "User Service",
+                    "message": "Successfully",
+                    "data": {
+                      "id": 208,
+                      "name": "irzam",
+                      "email": "irzam9@gmail.com",
+                      "password": "1234567"
+                    },
+                    "created_at": 1679491618
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Unprocessable Entity",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 13:26:32 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 132
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": false,
+                    "service": "User Service",
+                    "message": "Email already exist",
+                    "data": {
+                      "email": "irzam@gmail.com"
+                    },
+                    "created_at": 1679491592
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/users/history": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Get User History",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "user_id": 146,
+                    "per_page": 2,
+                    "current_page": 1
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "headers": {
+                "Content-Type": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "application/json"
+                  }
+                },
+                "Date": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "Wed, 22 Mar 2023 13:28:52 GMT"
+                  }
+                },
+                "Content-Length": {
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 582
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  },
+                  "example": {
+                    "status": true,
+                    "service": "User Service",
+                    "message": "Successfully",
+                    "data": [
+                      {
+                        "id": 314,
+                        "user_id": 201,
+                        "action": "create",
+                        "data": "{\"before\":null,\"after\":{\"id\":201,\"name\":\"irzam\",\"email\":\"irzam@gmail.com\",\"password\":\"1234567\"}}"
+                      },
+                      {
+                        "id": 315,
+                        "user_id": 201,
+                        "action": "update",
+                        "data": "{\"before\":{\"id\":201,\"name\":\"irzam\",\"email\":\"irzam@gmail.com\",\"password\":\"1234567\"},\"after\":{\"id\":201,\"name\":\"dian\",\"email\":\"dian12@gmail.com\",\"password\":\"dian\"}}"
+                      }
+                    ],
+                    "pagination": {
+                      "per_page": 2,
+                      "current_page": 1,
+                      "total": 3,
+                      "total_pages": 2
+                    },
+                    "created_at": 1679491732
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {}
+  }

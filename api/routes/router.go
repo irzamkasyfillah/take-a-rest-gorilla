@@ -18,8 +18,8 @@ func RegisterRoutes(r *mux.Router) {
 		http.ServeFile(w, r, "api/routes/docs/index.html")
 	}).Methods("GET")
 	// Docs routes .json
-	r.HandleFunc("/nobi-mission-doc.json", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "api/routes/docs/nobi-mission-doc.json")
+	r.HandleFunc("/doc.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "api/routes/docs/doc.json")
 	}).Methods("GET")
 
 	// User routes
