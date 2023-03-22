@@ -12,7 +12,8 @@ build-run:
 	./bin/${OS}/main
 
 run:
-	go run ./cmd/main.go
+	go build -o ./bin/linux ./cmd/main.go
+	./bin/${OS}/main
 
 create:
 	goose -dir ./migration create ${NAME} sql
