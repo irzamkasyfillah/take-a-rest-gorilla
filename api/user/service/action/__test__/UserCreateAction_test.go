@@ -12,6 +12,7 @@ import (
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
 	"github.com/irzam/my-app/api/user/exception"
+	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/irzam/my-app/api/user/service/action"
 	myMock "github.com/irzam/my-app/api/user/service/action/__test__/mock"
 	"github.com/irzam/my-app/api/user/utils"
@@ -47,14 +48,14 @@ func TestUserCreateActionMock(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		input      *mysql.User
+		input      *request.UserCreateRequest
 		want       *mysql.User
 		emailExist *mysql.User
 		wantErr    *exception.HandleError
 	}{
 		{
 			name: "Test User Create Action",
-			input: &mysql.User{
+			input: &request.UserCreateRequest{
 				Name:     "Test",
 				Email:    "tes@gmail.com",
 				Password: "123456",
@@ -69,7 +70,7 @@ func TestUserCreateActionMock(t *testing.T) {
 		},
 		{
 			name: "Test User Create Action (Email already exists)",
-			input: &mysql.User{
+			input: &request.UserCreateRequest{
 				Name:     "Test",
 				Email:    "tes@gmail.com",
 				Password: "123456",

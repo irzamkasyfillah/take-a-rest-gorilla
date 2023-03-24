@@ -17,12 +17,12 @@ type UserAction struct {
 }
 
 type UserActionInterface interface {
-	UserGetAllAction(ctx context.Context, input map[string]interface{}) (interface{}, *exception.HandleError)
-	UserGetOneAction(ctx context.Context, input request.UserGetOneModel) (*mysql.User, *exception.HandleError)
-	UserCreateAction(ctx context.Context, input *mysql.User) (*mysql.User, *exception.HandleError)
+	UserGetAllAction(ctx context.Context, input *request.UserGetAllRequest) (interface{}, *exception.HandleError)
+	UserGetOneAction(ctx context.Context, input *request.UserGetOneRequest) (*mysql.User, *exception.HandleError)
+	UserCreateAction(ctx context.Context, input *request.UserCreateRequest) (*mysql.User, *exception.HandleError)
 	UserUpdateAction(ctx context.Context, input map[string]interface{}) (*mysql.User, *exception.HandleError)
-	UserDeleteAction(ctx context.Context, input request.UserGetOneModel) *exception.HandleError
-	UserGetHistoryAction(ctx context.Context, input map[string]interface{}) (interface{}, *exception.HandleError)
+	UserDeleteAction(ctx context.Context, input *request.UserDeleteRequest) *exception.HandleError
+	UserGetHistoryAction(ctx context.Context, input *request.UserGetHistoryRequest) (interface{}, *exception.HandleError)
 }
 
 func NewUserAction(userRepo repository.UserRepositoryInterface, userHistoryRepo repository.UserHistoryRepositoryInterface, db *gorm.DB) UserActionInterface {

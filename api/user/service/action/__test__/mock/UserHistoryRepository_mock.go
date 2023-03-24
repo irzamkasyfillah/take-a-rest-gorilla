@@ -13,12 +13,12 @@ type UserHistoryRepositoryMock struct {
 }
 
 type UserHistoryRepositoryInterface interface {
-	GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...int) (interface{}, error)
+	GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...uint) (interface{}, error)
 	Create(ctx context.Context, db *gorm.DB, userHistory *mysql.UserHistory) (*mysql.UserHistory, error)
 }
 
-func (u *UserHistoryRepositoryMock) GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...int) (interface{}, error) {
-	var currentPage, perPage int
+func (u *UserHistoryRepositoryMock) GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...uint) (interface{}, error) {
+	var currentPage, perPage uint
 	if len(args) > 0 {
 		currentPage = args[0]
 		perPage = args[1]

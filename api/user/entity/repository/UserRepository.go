@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
+	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/irzam/my-app/api/user/utils"
 	"gorm.io/gorm"
 )
@@ -12,11 +13,11 @@ type UserRepository struct {
 }
 
 type UserRepositoryInterface interface {
-	GetByEmail(ctx context.Context, db *gorm.DB, email string) (*mysql.User, error)
-	GetByID(ctx context.Context, db *gorm.DB, id uint) (*mysql.User, error)
-	GetAll(ctx context.Context, db *gorm.DB, args ...int) (interface{}, error)
-	Create(ctx context.Context, db *gorm.DB, user *mysql.User) (*mysql.User, error)
-	Update(ctx context.Context, db *gorm.DB, input map[string]interface{}) (*mysql.User, error)
+	GetByEmail(ctx context.Context, db *gorm.DB, email string) (user *mysql.User, err error)
+	GetByID(ctx context.Context, db *gorm.DB, id uint) (user *mysql.User, err error)
+	GetAll(ctx context.Context, db *gorm.DB, args ...uint) (interface{}, error)
+	Create(ctx context.Context, db *gorm.DB, input *request.UserCreateRequest) (user *mysql.User, err error)
+	Update(ctx context.Context, db *gorm.DB, input map[string]interface{}) (user *mysql.User, err error)
 	Delete(ctx context.Context, db *gorm.DB, id uint) error
 }
 
@@ -42,14 +43,14 @@ func (repository *UserRepository) GetByID(ctx context.Context, db *gorm.DB, id u
 	return user, nil
 }
 
-func (repository *UserRepository) GetAll(ctx context.Context, db *gorm.DB, args ...int) (interface{}, error) {
+func (repository *UserRepository) GetAll(ctx context.Context, db *gorm.DB, args ...uint) (interface{}, error) {
 	db = db.WithContext(ctx)
 
 	// Default pagination
 	var currentPage, perPage int
 	if len(args) > 0 {
-		currentPage = args[0]
-		perPage = args[1]
+		currentPage = int(args[0])
+		perPage = int(args[1])
 	} else {
 		currentPage = 1
 		perPage = 10
@@ -73,10 +74,15 @@ func (repository *UserRepository) GetAll(ctx context.Context, db *gorm.DB, args 
 	}, nil
 }
 
-func (repository *UserRepository) Create(ctx context.Context, db *gorm.DB, user *mysql.User) (*mysql.User, error) {
+func (repository *UserRepository) Create(ctx context.Context, db *gorm.DB, input *request.UserCreateRequest) (user *mysql.User, err error) {
+	// generate input
+	user = &mysql.User{
+		Name:     input.Name,
+		Email:    input.Email,
+		Password: input.Password,
+	}
 	db = db.WithContext(ctx)
-
-	if err := db.Table(mysql.UserTableName()).Create(user).Error; err != nil {
+	if err := db.Table(mysql.UserTableName()).Create(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil

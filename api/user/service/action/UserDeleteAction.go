@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (action *UserAction) UserDeleteAction(ctx context.Context, input request.UserGetOneModel) *exception.HandleError {
+func (action *UserAction) UserDeleteAction(ctx context.Context, input *request.UserDeleteRequest) *exception.HandleError {
 	// Check if user exist
 	user, _ := action.UserRepository.GetByID(ctx, action.DB, input.ID)
 	if user == nil || user.ID == 0 {

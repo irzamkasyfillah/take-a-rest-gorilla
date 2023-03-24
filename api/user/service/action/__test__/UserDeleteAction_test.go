@@ -18,14 +18,14 @@ import (
 func TestUserDeleteActionMock(t *testing.T) {
 	tests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     *request.UserDeleteRequest
 		userExist *mysql.User
 		wantErr   *exception.HandleError
 	}{
 		{
 			name: "Test User Delete Action",
-			input: map[string]interface{}{
-				"id": uint(1),
+			input: &request.UserDeleteRequest{
+				ID: 1,
 			},
 			userExist: &mysql.User{
 				ID:       1,
@@ -37,8 +37,8 @@ func TestUserDeleteActionMock(t *testing.T) {
 		},
 		{
 			name: "Test User Delete Action (User not found)",
-			input: map[string]interface{}{
-				"id": uint(1),
+			input: &request.UserDeleteRequest{
+				ID: 999,
 			},
 			userExist: nil,
 			wantErr: &exception.HandleError{
@@ -54,10 +54,10 @@ func TestUserDeleteActionMock(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			UserHistoryRepository.Mock.On("Create", context.Background(), mock.Anything).Return(nil)
-			UserRepository.Mock.On("GetByID", context.Background(), tt.input["id"].(uint)).Return(tt.userExist, nil)
-			UserRepository.Mock.On("Delete", context.Background(), tt.input["id"].(uint)).Return(nil)
+			UserRepository.Mock.On("GetByID", context.Background(), tt.input.ID).Return(tt.userExist, nil)
+			UserRepository.Mock.On("Delete", context.Background(), tt.input.ID).Return(nil)
 
-			err := UserAction.UserDeleteAction(context.Background(), request.UserGetOneModel{ID: tt.input["id"].(uint)})
+			err := UserAction.UserDeleteAction(context.Background(), tt.input)
 			if err != nil {
 				assert.Equal(t, err.StatusCode, tt.wantErr.StatusCode, fmt.Sprintf("got %v, want %v", err.StatusCode, tt.wantErr.StatusCode))
 				assert.Equal(t, err.Message, tt.wantErr.Message, fmt.Sprintf("got %v, want %v", err.Message, tt.wantErr.Message))

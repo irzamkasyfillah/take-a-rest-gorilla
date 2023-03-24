@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
+	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
@@ -12,11 +13,11 @@ type UserRepositoryMock struct {
 	Mock mock.Mock
 }
 
-type UserRepositoryInterface interface {
+type UserRepositoryMockInterface interface {
 	GetByEmail(ctx context.Context, db *gorm.DB, email string) (*mysql.User, error)
 	GetByID(ctx context.Context, db *gorm.DB, id uint) (*mysql.User, error)
-	GetAll(ctx context.Context, db *gorm.DB, args ...int) (interface{}, error)
-	Create(ctx context.Context, db *gorm.DB, user *mysql.User) (*mysql.User, error)
+	GetAll(ctx context.Context, db *gorm.DB, args ...uint) (interface{}, error)
+	Create(ctx context.Context, db *gorm.DB, input *request.UserCreateRequest) (*mysql.User, error)
 	Update(ctx context.Context, db *gorm.DB, input map[string]interface{}) (*mysql.User, error)
 	Delete(ctx context.Context, db *gorm.DB, id uint) error
 }
@@ -39,8 +40,8 @@ func (u *UserRepositoryMock) GetByEmail(ctx context.Context, db *gorm.DB, email 
 	}
 }
 
-func (u *UserRepositoryMock) GetAll(ctx context.Context, db *gorm.DB, args ...int) (interface{}, error) {
-	var currentPage, perPage int
+func (u *UserRepositoryMock) GetAll(ctx context.Context, db *gorm.DB, args ...uint) (interface{}, error) {
+	var currentPage, perPage uint
 	if len(args) > 0 {
 		currentPage = args[0]
 		perPage = args[1]
@@ -62,9 +63,9 @@ func (u *UserRepositoryMock) GetAll(ctx context.Context, db *gorm.DB, args ...in
 	}
 }
 
-func (u *UserRepositoryMock) Create(ctx context.Context, db *gorm.DB, user *mysql.User) (*mysql.User, error) {
+func (u *UserRepositoryMock) Create(ctx context.Context, db *gorm.DB, input *request.UserCreateRequest) (*mysql.User, error) {
 	// child, _ := context.WithTimeout(ctx, 2*time.Second)
-	args := u.Mock.Called(ctx, user)
+	args := u.Mock.Called(ctx, input)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	} else {

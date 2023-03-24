@@ -11,6 +11,6 @@ type HandleError struct {
 	StatusCode int
 }
 
-func UserException(message string, data interface{}) transformer.Format {
+func UserException(message string, data interface{}) *transformer.Format {
 	return transformer.Transformer(false, utils.Service, message, data)
 }

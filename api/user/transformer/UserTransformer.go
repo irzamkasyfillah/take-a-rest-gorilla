@@ -16,8 +16,8 @@ type Format struct {
 	CreatedAt  int64       `json:"created_at"`
 }
 
-func Transformer(status bool, service string, message string, data interface{}, pagination interface{}) Format {
-	return Format{
+func Transformer(status bool, service string, message string, data interface{}, pagination interface{}) *Format {
+	return &Format{
 		Status:     status,
 		Service:    service,
 		Message:    message,
@@ -27,10 +27,10 @@ func Transformer(status bool, service string, message string, data interface{}, 
 	}
 }
 
-func UserGetAllTransformer(data map[string]interface{}) Format {
+func UserGetAllTransformer(data map[string]interface{}) *Format {
 	return Transformer(true, utils.Service, "Successfully", data["data"], data["pagination"])
 }
 
-func UserTransformer(data interface{}) transformer.Format {
+func UserTransformer(data interface{}) *transformer.Format {
 	return transformer.Transformer(true, utils.Service, "Successfully", data)
 }

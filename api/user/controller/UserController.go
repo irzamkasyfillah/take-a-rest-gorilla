@@ -2,10 +2,11 @@ package controller
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/irzam/my-app/api/user/entity/model/mysql"
+	"github.com/go-playground/validator/v10"
 	"github.com/irzam/my-app/api/user/exception"
 	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/irzam/my-app/api/user/service"
@@ -18,13 +19,15 @@ type UserController struct {
 	UserService service.UserServiceInterface
 }
 
+var validate = validator.New()
+
 type UserControllerInterface interface {
-	UserGetHistoryService(ctx context.Context, input map[string]interface{}, write *http.ResponseWriter) (*UserTransformer.Format, *transformer.Format)
-	UserGetAllService(ctx context.Context, input map[string]interface{}, w *http.ResponseWriter) UserTransformer.Format
-	UserGetByIdService(ctx context.Context, input map[string]string, w *http.ResponseWriter) transformer.Format
-	UserCreateService(ctx context.Context, input *mysql.User, w *http.ResponseWriter) transformer.Format
-	UserUpdateService(ctx context.Context, input map[string]interface{}, w *http.ResponseWriter) transformer.Format
-	UserDeleteService(ctx context.Context, input map[string]string, w *http.ResponseWriter) transformer.Format
+	UserGetHistoryService(ctx context.Context, input *request.UserGetHistoryRequest, write *http.ResponseWriter) (*UserTransformer.Format, *transformer.Format)
+	UserGetAllService(ctx context.Context, input *request.UserGetAllRequest, w *http.ResponseWriter) (*UserTransformer.Format, *transformer.Format)
+	UserGetByIdService(ctx context.Context, input *request.UserGetOneRequest, w *http.ResponseWriter) *transformer.Format
+	UserCreateService(ctx context.Context, input *request.UserCreateRequest, w *http.ResponseWriter) *transformer.Format
+	UserUpdateService(ctx context.Context, input map[string]interface{}, w *http.ResponseWriter) *transformer.Format
+	UserDeleteService(ctx context.Context, input *request.UserDeleteRequest, w *http.ResponseWriter) *transformer.Format
 }
 
 func NewUserController(service service.UserServiceInterface) UserControllerInterface {
@@ -33,38 +36,59 @@ func NewUserController(service service.UserServiceInterface) UserControllerInter
 	}
 }
 
-func (controller *UserController) UserGetHistoryService(ctx context.Context, input map[string]interface{}, write *http.ResponseWriter) (*UserTransformer.Format, *transformer.Format) {
+func (controller *UserController) UserGetHistoryService(ctx context.Context, input *request.UserGetHistoryRequest, write *http.ResponseWriter) (*UserTransformer.Format, *transformer.Format) {
 	w := *write
-	// Check if id is valid (is a number)
-	user_id, _ := input["user_id"].(float64)
-	if user_id == 0 {
+
+	// validate input request
+	if err := validate.Struct(input); err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		data := exception.UserException(utils.UserNotFound, map[string]interface{}{"id": input["user_id"]})
-		return nil, &data
+		return nil, exception.UserException(
+			utils.RequestValidation,
+			map[string]interface{}{
+				"message": err.Error(),
+			},
+		)
 	}
+
 	users, err := controller.UserService.GetHistoryService(ctx, input)
 	if err != nil {
 		w.WriteHeader(err.StatusCode)
 	}
 	data := UserTransformer.UserGetAllTransformer(users.(map[string]interface{}))
-	return &data, nil
+	return data, nil
 }
 
-func (controller *UserController) UserGetAllService(ctx context.Context, input map[string]interface{}, write *http.ResponseWriter) UserTransformer.Format {
-	users, _ := controller.UserService.GetAllService(ctx, input)
-	return UserTransformer.UserGetAllTransformer(users.(map[string]interface{}))
-}
+func (controller *UserController) UserGetAllService(ctx context.Context, input *request.UserGetAllRequest, write *http.ResponseWriter) (*UserTransformer.Format, *transformer.Format) {
 
-func (controller *UserController) UserGetByIdService(ctx context.Context, input map[string]string, write *http.ResponseWriter) transformer.Format {
 	w := *write
-	// Check if id is valid (is a number)
-	id, _ := strconv.Atoi(input["id"])
-	if id == 0 {
+
+	// validate input request
+	if err := validate.Struct(input); err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		return exception.UserException(utils.UserNotFound, map[string]interface{}{"id": input["id"]})
+		data := exception.UserException(utils.RequestValidation, map[string]interface{}{"message": err.Error()})
+		return nil, data
 	}
 
-	user, err := controller.UserService.GetUserService(ctx, request.UserGetOneModel{ID: uint(id)})
+	users, _ := controller.UserService.GetAllService(ctx, input)
+	return UserTransformer.UserGetAllTransformer(users.(map[string]interface{})), nil
+}
+
+func (controller *UserController) UserGetByIdService(ctx context.Context, input *request.UserGetOneRequest, write *http.ResponseWriter) *transformer.Format {
+	w := *write
+
+	// validate input request
+	if err := validate.Struct(input); err != nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return exception.UserException(
+			utils.RequestValidation,
+			map[string]interface{}{
+				"message": err.Error(),
+			},
+		)
+	}
+
+	user, err := controller.UserService.GetUserService(ctx, input)
 	if err != nil {
 		w.WriteHeader(err.StatusCode)
 		return exception.UserException(err.Message, err.Data)
@@ -72,8 +96,22 @@ func (controller *UserController) UserGetByIdService(ctx context.Context, input 
 	return UserTransformer.UserTransformer(user)
 }
 
-func (controller *UserController) UserCreateService(ctx context.Context, input *mysql.User, write *http.ResponseWriter) transformer.Format {
+func (controller *UserController) UserCreateService(ctx context.Context, input *request.UserCreateRequest, write *http.ResponseWriter) *transformer.Format {
 	w := *write
+
+	// validate input request
+	validate := validator.New()
+	if err := validate.Struct(input); err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return exception.UserException(
+			utils.RequestValidation,
+			map[string]interface{}{
+				"message": err.Error(),
+			},
+		)
+	}
+
 	user, err := controller.UserService.CreateService(ctx, input)
 	if err != nil {
 		w.WriteHeader(err.StatusCode)
@@ -82,7 +120,7 @@ func (controller *UserController) UserCreateService(ctx context.Context, input *
 	return UserTransformer.UserTransformer(user)
 }
 
-func (controller *UserController) UserUpdateService(ctx context.Context, input map[string]interface{}, write *http.ResponseWriter) transformer.Format {
+func (controller *UserController) UserUpdateService(ctx context.Context, input map[string]interface{}, write *http.ResponseWriter) *transformer.Format {
 	w := *write
 	// Check if id is valid (is a number)
 	id, _ := strconv.Atoi(input["id"].(string))
@@ -99,16 +137,21 @@ func (controller *UserController) UserUpdateService(ctx context.Context, input m
 	return UserTransformer.UserTransformer(user)
 }
 
-func (controller *UserController) UserDeleteService(ctx context.Context, input map[string]string, write *http.ResponseWriter) transformer.Format {
+func (controller *UserController) UserDeleteService(ctx context.Context, input *request.UserDeleteRequest, write *http.ResponseWriter) *transformer.Format {
 	w := *write
-	// Check if id is valid (is a number)
-	id, _ := strconv.Atoi(input["id"])
-	if id == 0 {
+
+	// validate input request
+	if err := validate.Struct(input); err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		return exception.UserException(utils.UserNotFound, map[string]interface{}{"id": input["id"]})
+		return exception.UserException(
+			utils.RequestValidation,
+			map[string]interface{}{
+				"message": err.Error(),
+			},
+		)
 	}
 
-	err := controller.UserService.DeleteService(ctx, request.UserGetOneModel{ID: uint(id)})
+	err := controller.UserService.DeleteService(ctx, input)
 	if err != nil {
 		w.WriteHeader(err.StatusCode)
 		return exception.UserException(err.Message, err.Data)

@@ -5,30 +5,23 @@ import (
 	"net/http"
 
 	"github.com/irzam/my-app/api/user/exception"
+	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/irzam/my-app/api/user/utils"
 )
 
-func (action *UserAction) UserGetHistoryAction(ctx context.Context, payload map[string]interface{}) (interface{}, *exception.HandleError) {
-	// Check if payload user_id is exist
-	if payload["user_id"] == nil {
-		return nil, &exception.HandleError{
-			Data:       map[string]interface{}{"message": "User id is required"},
-			Message:    utils.UserNotFound,
-			StatusCode: http.StatusNotFound,
-		}
+func (action *UserAction) UserGetHistoryAction(ctx context.Context, input *request.UserGetHistoryRequest) (interface{}, *exception.HandleError) {
+	currentPage := uint(1)
+	perPage := uint(10)
+	if input.PerPage != 0 {
+		perPage = input.PerPage
 	}
-
-	currentPage := 1
-	perPage := 10
-	if payload["per_page"] != nil {
-		perPage = int(payload["per_page"].(float64))
-	}
-	if payload["current_page"] != nil {
-		currentPage = int(payload["current_page"].(float64))
+	if input.CurrentPage != 0 {
+		currentPage = input.CurrentPage
 	}
 
 	// Get all user
-	users, err := action.UserHistoryRepository.GetByUserID(ctx, action.DB, uint(payload["user_id"].(float64)), currentPage, perPage)
+	users, err := action.UserHistoryRepository.GetByUserID(ctx, action.DB, input.UserId, currentPage, perPage)
+
 	if err != nil {
 		return nil, &exception.HandleError{
 			Message:    utils.Failed,

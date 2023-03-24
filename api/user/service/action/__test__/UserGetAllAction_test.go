@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/irzam/my-app/api/user/exception"
+	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,14 +14,14 @@ import (
 func TestUserGetAllActionMock(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   map[string]interface{}
+		input   *request.UserGetAllRequest
 		wantErr *exception.HandleError
 	}{
 		{
 			name: "Test User Get All Action",
-			input: map[string]interface{}{
-				"current_page": float64(1),
-				"per_page":     float64(10),
+			input: &request.UserGetAllRequest{
+				PerPage:     10,
+				CurrentPage: 1,
 			},
 			wantErr: nil,
 		},
@@ -28,7 +29,7 @@ func TestUserGetAllActionMock(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			UserRepository.Mock.On("GetAll", context.Background(), 1, 10).Return(nil, nil)
+			UserRepository.Mock.On("GetAll", context.Background(), tt.input.CurrentPage, tt.input.PerPage).Return(nil, nil)
 			_, err := UserAction.UserGetAllAction(context.Background(), tt.input)
 			if err != nil {
 				assert.Equal(t, err, tt.wantErr, fmt.Sprintf("got %v, want %v", err, tt.wantErr))

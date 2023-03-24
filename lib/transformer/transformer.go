@@ -12,8 +12,8 @@ type Format struct {
 	CreatedAt int64       `json:"created_at"`
 }
 
-func Transformer(status bool, service string, message string, data interface{}) Format {
-	return Format{
+func Transformer(status bool, service string, message string, data interface{}) *Format {
+	return &Format{
 		Status:    status,
 		Service:   service,
 		Message:   message,

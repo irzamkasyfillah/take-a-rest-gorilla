@@ -14,12 +14,12 @@ type UserService struct {
 }
 
 type UserServiceInterface interface {
-	GetHistoryService(ctx context.Context, input map[string]interface{}) (interface{}, *exception.HandleError)
-	GetAllService(ctx context.Context, input map[string]interface{}) (interface{}, *exception.HandleError)
-	GetUserService(ctx context.Context, input request.UserGetOneModel) (*mysql.User, *exception.HandleError)
-	CreateService(ctx context.Context, input *mysql.User) (*mysql.User, *exception.HandleError)
+	GetHistoryService(ctx context.Context, input *request.UserGetHistoryRequest) (interface{}, *exception.HandleError)
+	GetAllService(ctx context.Context, input *request.UserGetAllRequest) (interface{}, *exception.HandleError)
+	GetUserService(ctx context.Context, input *request.UserGetOneRequest) (*mysql.User, *exception.HandleError)
+	CreateService(ctx context.Context, input *request.UserCreateRequest) (*mysql.User, *exception.HandleError)
 	UpdateService(ctx context.Context, input map[string]interface{}) (*mysql.User, *exception.HandleError)
-	DeleteService(ctx context.Context, input request.UserGetOneModel) *exception.HandleError
+	DeleteService(ctx context.Context, input *request.UserDeleteRequest) *exception.HandleError
 }
 
 func NewUserService(action action.UserActionInterface) UserServiceInterface {
@@ -28,19 +28,19 @@ func NewUserService(action action.UserActionInterface) UserServiceInterface {
 	}
 }
 
-func (service *UserService) GetHistoryService(ctx context.Context, input map[string]interface{}) (interface{}, *exception.HandleError) {
+func (service *UserService) GetHistoryService(ctx context.Context, input *request.UserGetHistoryRequest) (interface{}, *exception.HandleError) {
 	return service.UserAction.UserGetHistoryAction(ctx, input)
 }
 
-func (service *UserService) GetAllService(ctx context.Context, input map[string]interface{}) (interface{}, *exception.HandleError) {
+func (service *UserService) GetAllService(ctx context.Context, input *request.UserGetAllRequest) (interface{}, *exception.HandleError) {
 	return service.UserAction.UserGetAllAction(ctx, input)
 }
 
-func (service *UserService) GetUserService(ctx context.Context, input request.UserGetOneModel) (*mysql.User, *exception.HandleError) {
+func (service *UserService) GetUserService(ctx context.Context, input *request.UserGetOneRequest) (*mysql.User, *exception.HandleError) {
 	return service.UserAction.UserGetOneAction(ctx, input)
 }
 
-func (service *UserService) CreateService(ctx context.Context, input *mysql.User) (*mysql.User, *exception.HandleError) {
+func (service *UserService) CreateService(ctx context.Context, input *request.UserCreateRequest) (*mysql.User, *exception.HandleError) {
 	return service.UserAction.UserCreateAction(ctx, input)
 }
 
@@ -48,6 +48,6 @@ func (service *UserService) UpdateService(ctx context.Context, input map[string]
 	return service.UserAction.UserUpdateAction(ctx, input)
 }
 
-func (service *UserService) DeleteService(ctx context.Context, input request.UserGetOneModel) *exception.HandleError {
+func (service *UserService) DeleteService(ctx context.Context, input *request.UserDeleteRequest) *exception.HandleError {
 	return service.UserAction.UserDeleteAction(ctx, input)
 }

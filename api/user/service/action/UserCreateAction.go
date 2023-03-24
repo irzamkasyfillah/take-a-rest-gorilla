@@ -7,11 +7,12 @@ import (
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
 	"github.com/irzam/my-app/api/user/exception"
+	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/irzam/my-app/api/user/utils"
 	"gorm.io/gorm"
 )
 
-func (action *UserAction) UserCreateAction(ctx context.Context, input *mysql.User) (*mysql.User, *exception.HandleError) {
+func (action *UserAction) UserCreateAction(ctx context.Context, input *request.UserCreateRequest) (*mysql.User, *exception.HandleError) {
 	// Check email exist
 	if user, _ := action.UserRepository.GetByEmail(ctx, action.DB, input.Email); user != nil && user.ID != 0 {
 		return nil, &exception.HandleError{
@@ -50,7 +51,7 @@ func (action *UserAction) UserCreateAction(ctx context.Context, input *mysql.Use
 	return user, nil
 }
 
-func UserCreateWithSnapshot(ctx context.Context, action *UserAction, input *mysql.User) (user *mysql.User, er error) {
+func UserCreateWithSnapshot(ctx context.Context, action *UserAction, input *request.UserCreateRequest) (user *mysql.User, er error) {
 	db := action.DB.WithContext(ctx)
 	er = db.Transaction(func(tx *gorm.DB) (err error) {
 		// Create user

@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	"github.com/irzam/my-app/api/user/exception"
+	"github.com/irzam/my-app/api/user/middleware/request"
 	"github.com/irzam/my-app/api/user/utils"
 )
 
-func (action *UserAction) UserGetAllAction(ctx context.Context, payload map[string]interface{}) (interface{}, *exception.HandleError) {
-	currentPage := 1
-	perPage := 10
-	if payload["per_page"] != nil {
-		perPage = int(payload["per_page"].(float64))
+func (action *UserAction) UserGetAllAction(ctx context.Context, input *request.UserGetAllRequest) (interface{}, *exception.HandleError) {
+	currentPage := uint(1)
+	perPage := uint(10)
+	if input.PerPage != 0 {
+		perPage = input.PerPage
 	}
-	if payload["current_page"] != nil {
-		currentPage = int(payload["current_page"].(float64))
+	if input.CurrentPage != 0 {
+		currentPage = input.CurrentPage
 	}
 
 	// Get all user

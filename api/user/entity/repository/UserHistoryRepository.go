@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
+	"log"
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
 	"github.com/irzam/my-app/api/user/utils"
@@ -12,7 +14,7 @@ type UserHistoryRepository struct {
 }
 
 type UserHistoryRepositoryInterface interface {
-	GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...int) (interface{}, error)
+	GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...uint) (interface{}, error)
 	Create(ctx context.Context, db *gorm.DB, userHistory *mysql.UserHistory) (*mysql.UserHistory, error)
 }
 
@@ -29,14 +31,14 @@ func (repository *UserHistoryRepository) Create(ctx context.Context, db *gorm.DB
 	return userHistory, nil
 }
 
-func (repository *UserHistoryRepository) GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...int) (interface{}, error) {
+func (repository *UserHistoryRepository) GetByUserID(ctx context.Context, db *gorm.DB, user_id uint, args ...uint) (interface{}, error) {
 	db = db.WithContext(ctx)
 
 	// Default pagination
 	var currentPage, perPage int
 	if len(args) > 0 {
-		currentPage = args[0]
-		perPage = args[1]
+		currentPage = int(args[0])
+		perPage = int(args[1])
 	} else {
 		currentPage = 1
 		perPage = 10
@@ -56,14 +58,28 @@ func (repository *UserHistoryRepository) GetByUserID(ctx context.Context, db *go
 		Find(&users).Error; err != nil {
 		return nil, err
 	}
-	// TODO : set data to json
-	// for i := range users {
-	// 	js, _ := json.Marshal(users[i].Data)
-	// 	users[i].Data = js
-	// }
 	pagination.SetTotalPages()
+
+	// TODO : set data to json
+	var users_json []mysql.UserHistoryRespond
+	var data map[string]map[string]interface{}
+	for i := range users {
+		if err := json.Unmarshal([]byte(users[i].Data), &data); err != nil {
+			log.Println(err)
+		}
+		users_json = append(users_json, mysql.UserHistoryRespond{
+			ID:     users[i].ID,
+			UserID: users[i].UserID,
+			Action: users[i].Action,
+			Data: &mysql.UserHistoryData{
+				Before: data["before"],
+				After:  data["after"],
+			},
+		})
+	}
+
 	return map[string]interface{}{
-		"data":       users,
+		"data":       users_json,
 		"pagination": pagination,
 	}, nil
 }

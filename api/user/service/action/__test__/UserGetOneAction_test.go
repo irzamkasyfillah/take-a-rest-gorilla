@@ -17,13 +17,15 @@ import (
 func TestUserGetOneActionMock(t *testing.T) {
 	tests := []struct {
 		Name    string
-		ID      uint
+		Input   *request.UserGetOneRequest
 		Want    *mysql.User
 		WantErr *exception.HandleError
 	}{
 		{
 			Name: "Test User Get By ID Action",
-			ID:   1,
+			Input: &request.UserGetOneRequest{
+				ID: 1,
+			},
 			Want: &mysql.User{
 				ID:       1,
 				Name:     "Test",
@@ -34,7 +36,9 @@ func TestUserGetOneActionMock(t *testing.T) {
 		},
 		{
 			Name: "Test User Get By ID Action (User not found)",
-			ID:   9999,
+			Input: &request.UserGetOneRequest{
+				ID: 999,
+			},
 			Want: nil,
 			WantErr: &exception.HandleError{
 				Message:    utils.UserNotFound,
@@ -45,8 +49,8 @@ func TestUserGetOneActionMock(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
-			UserRepository.Mock.On("GetByID", context.Background(), tt.ID).Return(tt.Want, nil)
-			result, err := UserAction.UserGetOneAction(context.Background(), request.UserGetOneModel{ID: tt.ID})
+			UserRepository.Mock.On("GetByID", context.Background(), tt.Input.ID).Return(tt.Want, nil)
+			result, err := UserAction.UserGetOneAction(context.Background(), tt.Input)
 			if result != nil {
 				assert.Equal(t, tt.Want.Name, result.Name, fmt.Sprintf("got %v, want %v", result.Name, tt.Want.Name))
 				assert.Equal(t, tt.Want.Email, result.Email, fmt.Sprintf("got %v, want %v", result.Email, tt.Want.Email))
