@@ -100,11 +100,12 @@ func (route *UserRoutes) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Get request from params and body
 	params := mux.Vars(r)
-	var body map[string]interface{}
+	id, _ := strconv.Atoi(params["id"])
+	var body request.UserUpdateRequest
 	json.NewDecoder(r.Body).Decode(&body)
-	body["id"] = params["id"]
+	body.ID = uint(id)
 
-	res, _ := json.Marshal(route.controller.UserUpdateService(r.Context(), body, &w))
+	res, _ := json.Marshal(route.controller.UserUpdateService(r.Context(), &body, &w))
 	w.Write(res)
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 	"testing"
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
@@ -30,7 +29,7 @@ func TestUserUpdateActionMock(t *testing.T) {
 		{
 			name: "Test User Update Action",
 			input: map[string]interface{}{
-				"id":       "1",
+				"id":       uint(1),
 				"name":     "Test 123",
 				"email":    "tes@gmail.com",
 				"password": "123456789",
@@ -53,7 +52,7 @@ func TestUserUpdateActionMock(t *testing.T) {
 		{
 			name: "Test User Update Action (Email already exist)",
 			input: map[string]interface{}{
-				"id":       "1",
+				"id":       uint(1),
 				"name":     "Test 123",
 				"email":    "tes@gmail.com",
 				"password": "123456789",
@@ -79,7 +78,7 @@ func TestUserUpdateActionMock(t *testing.T) {
 		{
 			name: "Test User Update Action (User not found)",
 			input: map[string]interface{}{
-				"id":       "1",
+				"id":       uint(1),
 				"name":     "Test 123",
 				"email":    "tes@gmail.com",
 				"password": "123456789",
@@ -97,8 +96,7 @@ func TestUserUpdateActionMock(t *testing.T) {
 	// run test
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			id, _ := strconv.Atoi(test.input["id"].(string))
-			UserRepository.Mock.On("GetByID", ctx, uint(id)).Return(test.userExist, nil)
+			UserRepository.Mock.On("GetByID", ctx, test.input["id"]).Return(test.userExist, nil)
 			UserRepository.Mock.On("GetByEmail", ctx, test.input["email"].(string)).Return(test.emailExist, nil)
 			UserHistoryRepository.Mock.On("Create", ctx, mock.Anything).Return(nil)
 			UserRepository.Mock.On("Update", ctx, test.input).Return(test.want, test.wantErr)

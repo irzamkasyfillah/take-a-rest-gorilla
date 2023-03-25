@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
 	"github.com/irzam/my-app/api/user/exception"
@@ -14,22 +13,23 @@ import (
 
 func (action *UserAction) UserUpdateAction(ctx context.Context, input map[string]interface{}) (*mysql.User, *exception.HandleError) {
 	// Check id exist
-	id, _ := strconv.Atoi(input["id"].(string))
-	user_before, _ := action.UserRepository.GetByID(ctx, action.DB, uint(id))
+	user_before, _ := action.UserRepository.GetByID(ctx, action.DB, input["id"].(uint))
 	if user_before == nil || user_before.ID == 0 {
 		return nil, &exception.HandleError{
 			Message:    utils.UserNotFound,
-			Data:       map[string]interface{}{"id": id},
+			Data:       map[string]interface{}{"id": input["id"].(uint)},
 			StatusCode: http.StatusUnprocessableEntity,
 		}
 	}
 
 	// Check email exist
-	if user, _ := action.UserRepository.GetByEmail(ctx, action.DB, input["email"].(string)); user != nil && user.ID != 0 {
-		return nil, &exception.HandleError{
-			Message:    utils.EmailAlreadyExist,
-			Data:       map[string]interface{}{"email": input["email"]},
-			StatusCode: http.StatusUnprocessableEntity,
+	if input["email"] != nil {
+		if user, _ := action.UserRepository.GetByEmail(ctx, action.DB, input["email"].(string)); user != nil && user.ID != 0 {
+			return nil, &exception.HandleError{
+				Message:    utils.EmailAlreadyExist,
+				Data:       map[string]interface{}{"email": input["email"]},
+				StatusCode: http.StatusUnprocessableEntity,
+			}
 		}
 	}
 

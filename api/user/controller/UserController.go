@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"strconv"
+	"reflect"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/irzam/my-app/api/user/exception"
@@ -26,7 +26,7 @@ type UserControllerInterface interface {
 	UserGetAllService(ctx context.Context, input *request.UserGetAllRequest, w *http.ResponseWriter) (*UserTransformer.Format, *transformer.Format)
 	UserGetByIdService(ctx context.Context, input *request.UserGetOneRequest, w *http.ResponseWriter) *transformer.Format
 	UserCreateService(ctx context.Context, input *request.UserCreateRequest, w *http.ResponseWriter) *transformer.Format
-	UserUpdateService(ctx context.Context, input map[string]interface{}, w *http.ResponseWriter) *transformer.Format
+	UserUpdateService(ctx context.Context, input *request.UserUpdateRequest, w *http.ResponseWriter) *transformer.Format
 	UserDeleteService(ctx context.Context, input *request.UserDeleteRequest, w *http.ResponseWriter) *transformer.Format
 }
 
@@ -120,16 +120,33 @@ func (controller *UserController) UserCreateService(ctx context.Context, input *
 	return UserTransformer.UserTransformer(user)
 }
 
-func (controller *UserController) UserUpdateService(ctx context.Context, input map[string]interface{}, write *http.ResponseWriter) *transformer.Format {
+func (controller *UserController) UserUpdateService(ctx context.Context, input *request.UserUpdateRequest, write *http.ResponseWriter) *transformer.Format {
 	w := *write
-	// Check if id is valid (is a number)
-	id, _ := strconv.Atoi(input["id"].(string))
-	if id == 0 {
+
+	// validate input request
+	if err := validate.Struct(input); err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		return exception.UserException(utils.UserNotFound, map[string]interface{}{"id": input["id"]})
+		return exception.UserException(
+			utils.RequestValidation,
+			map[string]interface{}{
+				"message": err.Error(),
+			},
+		)
 	}
 
-	user, err := controller.UserService.UpdateService(ctx, input)
+	// convert request struct to map
+	input_request := make(map[string]interface{})
+	t := reflect.TypeOf(*input)
+	v := reflect.ValueOf(*input)
+	for i := 0; i < t.NumField(); i++ {
+		tag := t.Field(i).Tag.Get("json")
+		value := v.Field(i).Interface()
+		if value != "" {
+			input_request[tag] = value
+		}
+	}
+
+	user, err := controller.UserService.UpdateService(ctx, input_request)
 	if err != nil {
 		w.WriteHeader(err.StatusCode)
 		return exception.UserException(err.Message, err.Data)
