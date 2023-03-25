@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"reflect"
 
@@ -41,12 +40,17 @@ func (controller *UserController) UserGetHistoryService(ctx context.Context, inp
 
 	// validate input request
 	if err := validate.Struct(input); err != nil {
+		var errors []map[string]interface{}
+		for _, err := range err.(validator.ValidationErrors) {
+			errors = append(errors, map[string]interface{}{
+				"field":   err.Field(),
+				"message": err.Error(),
+			})
+		}
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return nil, exception.UserException(
 			utils.RequestValidation,
-			map[string]interface{}{
-				"message": err.Error(),
-			},
+			errors,
 		)
 	}
 
@@ -64,10 +68,18 @@ func (controller *UserController) UserGetAllService(ctx context.Context, input *
 
 	// validate input request
 	if err := validate.Struct(input); err != nil {
-		log.Println(err)
+		var errors []map[string]interface{}
+		for _, err := range err.(validator.ValidationErrors) {
+			errors = append(errors, map[string]interface{}{
+				"field":   err.Field(),
+				"message": err.Error(),
+			})
+		}
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		data := exception.UserException(utils.RequestValidation, map[string]interface{}{"message": err.Error()})
-		return nil, data
+		return nil, exception.UserException(
+			utils.RequestValidation,
+			errors,
+		)
 	}
 
 	users, _ := controller.UserService.GetAllService(ctx, input)
@@ -79,12 +91,17 @@ func (controller *UserController) UserGetByIdService(ctx context.Context, input 
 
 	// validate input request
 	if err := validate.Struct(input); err != nil {
+		var errors []map[string]interface{}
+		for _, err := range err.(validator.ValidationErrors) {
+			errors = append(errors, map[string]interface{}{
+				"field":   err.Field(),
+				"message": err.Error(),
+			})
+		}
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return exception.UserException(
 			utils.RequestValidation,
-			map[string]interface{}{
-				"message": err.Error(),
-			},
+			errors,
 		)
 	}
 
@@ -102,13 +119,17 @@ func (controller *UserController) UserCreateService(ctx context.Context, input *
 	// validate input request
 	validate := validator.New()
 	if err := validate.Struct(input); err != nil {
-		log.Println(err)
+		var errors []map[string]interface{}
+		for _, err := range err.(validator.ValidationErrors) {
+			errors = append(errors, map[string]interface{}{
+				"field":   err.Field(),
+				"message": err.Error(),
+			})
+		}
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return exception.UserException(
 			utils.RequestValidation,
-			map[string]interface{}{
-				"message": err.Error(),
-			},
+			errors,
 		)
 	}
 
@@ -125,12 +146,17 @@ func (controller *UserController) UserUpdateService(ctx context.Context, input *
 
 	// validate input request
 	if err := validate.Struct(input); err != nil {
+		var errors []map[string]interface{}
+		for _, err := range err.(validator.ValidationErrors) {
+			errors = append(errors, map[string]interface{}{
+				"field":   err.Field(),
+				"message": err.Error(),
+			})
+		}
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return exception.UserException(
 			utils.RequestValidation,
-			map[string]interface{}{
-				"message": err.Error(),
-			},
+			errors,
 		)
 	}
 
@@ -159,12 +185,17 @@ func (controller *UserController) UserDeleteService(ctx context.Context, input *
 
 	// validate input request
 	if err := validate.Struct(input); err != nil {
+		var errors []map[string]interface{}
+		for _, err := range err.(validator.ValidationErrors) {
+			errors = append(errors, map[string]interface{}{
+				"field":   err.Field(),
+				"message": err.Error(),
+			})
+		}
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return exception.UserException(
 			utils.RequestValidation,
-			map[string]interface{}{
-				"message": err.Error(),
-			},
+			errors,
 		)
 	}
 
