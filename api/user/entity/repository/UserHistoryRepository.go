@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"encoding/json"
-	"log"
 
 	"github.com/irzam/my-app/api/user/entity/model/mysql"
 	"github.com/irzam/my-app/api/user/utils"
@@ -61,25 +60,29 @@ func (repository *UserHistoryRepository) GetByUserID(ctx context.Context, db *go
 	pagination.SetTotalPages()
 
 	// TODO : set data to json
-	var users_json []mysql.UserHistoryRespond
+	users_json, _ := setDataToJson(&users)
+
+	return map[string]interface{}{
+		"data":       users_json,
+		"pagination": pagination,
+	}, nil
+}
+
+func setDataToJson(users *[]mysql.UserHistory) (users_json []mysql.UserHistoryRespond, err error) {
 	var data map[string]map[string]interface{}
-	for i := range users {
-		if err := json.Unmarshal([]byte(users[i].Data), &data); err != nil {
-			log.Println(err)
+	for i := range *users {
+		if err := json.Unmarshal([]byte((*users)[i].Data), &data); err != nil {
+			return nil, err
 		}
 		users_json = append(users_json, mysql.UserHistoryRespond{
-			ID:     users[i].ID,
-			UserID: users[i].UserID,
-			Action: users[i].Action,
+			ID:     (*users)[i].ID,
+			UserID: (*users)[i].UserID,
+			Action: (*users)[i].Action,
 			Data: &mysql.UserHistoryData{
 				Before: data["before"],
 				After:  data["after"],
 			},
 		})
 	}
-
-	return map[string]interface{}{
-		"data":       users_json,
-		"pagination": pagination,
-	}, nil
+	return users_json, nil
 }
