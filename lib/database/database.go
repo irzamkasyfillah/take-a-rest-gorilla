@@ -23,9 +23,6 @@ func Connect() {
 		panic("failed to connect database")
 	}
 
-	// result := map[string]interface{}{}
-	// db.Table("users").Take(&result)
-
 	log.Println("Connected to database")
 }
 

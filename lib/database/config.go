@@ -7,14 +7,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// func init() {
-// 	// Load environment variables
-// 	err := godotenv.Load(".env")
-// 	if err != nil {
-// 		log.Println("Error loading .env file")
-// 	}
-// }
-
 func GetConfig() (host string, port string, user string, pass string, name string) {
 	err := godotenv.Load(".env")
 	if err != nil {

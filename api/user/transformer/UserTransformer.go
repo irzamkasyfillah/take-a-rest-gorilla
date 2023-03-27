@@ -16,6 +16,7 @@ type Format struct {
 	CreatedAt  int64       `json:"created_at"`
 }
 
+// Transformer with pagination
 func Transformer(status bool, service string, message string, data interface{}, pagination interface{}) *Format {
 	return &Format{
 		Status:     status,

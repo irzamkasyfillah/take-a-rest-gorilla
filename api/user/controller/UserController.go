@@ -117,7 +117,6 @@ func (controller *UserController) UserCreateService(ctx context.Context, input *
 	w := *write
 
 	// validate input request
-	validate := validator.New()
 	if err := validate.Struct(input); err != nil {
 		var errors []map[string]interface{}
 		for _, err := range err.(validator.ValidationErrors) {
